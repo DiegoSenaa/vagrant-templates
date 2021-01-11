@@ -1,0 +1,31 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure("2") do |config|
+
+  ## Escolha da Box (Imagem)
+  config.vm.box = "centos/7"
+
+  ## mariadb
+  config.vm.define 'mariadb' do |mariadb|
+    mariadb.vm.hostname = "mariadb"
+    mariadb.vm.network "public_network", ip: "192.168.15.50"
+
+    # Configurações de Tamanho da VM
+    mariadb.vm.provider "virtualbox" do |v|
+      v.name = "mariadb"
+      v.memory = 512
+      v.cpus = 1
+    end
+
+    # Instala o Ansible e faz as configurações da VM
+    mariadb.vm.provision :ansible_local do |ansible|
+        ansible.install_mode = "default"
+        ansible.playbook = "./configs/playbook.yml"
+        ansible.verbose  = true
+        ansible.install  = true
+        ansible.limit    = "all" 
+        ansible.inventory_path = "./configs/inventory"
+    end
+  end
+end

@@ -1,0 +1,73 @@
+# PLAY PARA CONFIGURACAO DA WORKSPACE
+- hosts: mariadb
+  vars:
+     db_password: 123Mud@r
+     db_user: admin
+     db_name: curso
+  name: Configurando a WorkSpace
+  remote_user: vagrant
+  become: yes
+  tasks:
+
+  ## Instalado mysql
+  - name: Install MYSQL
+    yum:
+      name: ['mariadb','mariadb-server','MySQL-python']
+      state: present
+  
+  ## Registrando daemon
+  - name: MariaDB | Starting and enabled database
+    service:
+      name: mariadb
+      state: started
+      enabled: yes
+  
+  ## Removendo acesso anônimo
+  - name: MariaDB | Remove anonymous access
+    mysql_user: name="" host={{ item }} state=absent
+    with_items:
+      - localhost
+      - "{{ ansible_fqdn }}"
+  
+  ## Removendo base de teste
+  - name: MariaDB | Remove test database
+    mysql_db: name=test state=absent
+
+  ## Mudando senha root
+  - name: MariaDB | Change root pass
+    mysql_user: name=root host={{ item }} password={{ db_password }}
+    with_items:
+      - "{{ansible_fqdn}}"
+      - 127.0.0.1
+      - ::1
+      - localhost
+  
+  - name: MariaDB | Publish file .my.cnf in the root home
+    template:
+      src: /vagrant/configs/client-my-cnf.j2
+      dest: /root/.my.cnf
+  
+  ## Criando schemma
+  - name: Create a New Test DB called MyNewDB
+    mysql_db: name={{ db_name }} state=present login_user=root login_password={{ db_password }}
+
+  - name: (DATABASE) Allow remote hosts to connect
+    lineinfile:
+      path: /etc/my.cnf.d/server.cnf
+      state: present
+      insertafter: '^\[mysqld\]'
+      line: 'bind-address            = 0.0.0.0'
+  
+  ## Grant para acesso remoto root
+  - name: Grant for remote acess
+    command: >
+      mysql --user=root --password={{ db_password }}
+      --execute="grant all privileges on *.* to 'root'@'%' identified by password '*EDD52F716D1A05F9B30395466E692DE5ECC26F6D' with grant option"
+    check_mode: no
+  
+    ## Reload dos grants
+  - name: Grant reload
+    command: >
+      mysql --user=root --password={{ db_password }}
+      --execute="FLUSH PRIVILEGES"
+    check_mode: no

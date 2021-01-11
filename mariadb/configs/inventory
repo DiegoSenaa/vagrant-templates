@@ -1,0 +1,1 @@
+mariadb ansible_connection=local
