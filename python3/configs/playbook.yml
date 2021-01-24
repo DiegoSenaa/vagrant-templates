@@ -1,0 +1,18 @@
+# PLAY PARA CONFIGURACAO DA WORKSPACE
+- hosts: python3
+  name: Configurando a WorkSpace
+  remote_user: vagrant
+  become: yes
+  tasks:
+
+  ## Instalando repo do pip3
+  - name: Install Repos Pip3
+    yum:
+      name: ['epel-release']
+      state: latest
+  
+  ## Instalado Python
+  - name: Install Python3 and Pip
+    yum:
+      name: ['python3','python-pip']
+      state: latest

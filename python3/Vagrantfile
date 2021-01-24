@@ -1,0 +1,31 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure("2") do |config|
+
+  ## Escolha da Box (Imagem)
+  config.vm.box = "centos/7"
+
+  ## python3
+  config.vm.define 'python3' do |python3|
+    python3.vm.hostname = "python3"
+    python3.vm.network "public_network", ip: "192.168.15.51"
+
+    # Configurações de Tamanho da VM
+    python3.vm.provider "virtualbox" do |v|
+      v.name = "python3"
+      v.memory = 1024
+      v.cpus = 2
+    end
+
+    # Instala o Ansible e faz as configurações da VM
+    python3.vm.provision :ansible_local do |ansible|
+        ansible.install_mode = "default"
+        ansible.playbook = "./configs/playbook.yml"
+        ansible.verbose  = true
+        ansible.install  = true
+        ansible.limit    = "all" 
+        ansible.inventory_path = "./configs/inventory"
+    end
+  end
+end
