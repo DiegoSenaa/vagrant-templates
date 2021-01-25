@@ -5,7 +5,7 @@
 
 ## About <a name = "about"></a>
 
-This repository create a vagrant box with Python3 on OS.
+This repository create a vagrant box with Python3 on Ubuntu, python 3.9 as default.
 
 ### Prerequisites
 
