@@ -4,7 +4,7 @@
 Vagrant.configure("2") do |config|
 
   ## Escolha da Box (Imagem)
-  config.vm.box = "centos/7"
+  config.vm.box = "ubuntu/bionic64"
 
   ## python3
   config.vm.define 'python3' do |python3|

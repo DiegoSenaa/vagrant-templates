@@ -6,13 +6,25 @@
   tasks:
 
   ## Instalando repo do pip3
-  - name: Install Repos Pip3
-    yum:
-      name: ['epel-release']
+  - name: Active software-properties-common
+    apt:
+      name: ['software-properties-common']
       state: latest
   
-  ## Instalado Python
-  - name: Install Python3 and Pip
-    yum:
-      name: ['python3','python-pip']
-      state: latest
+  ## Add python repo
+  - name: Enable python 3.9 repo
+    apt_repository:
+       repo: 'ppa:deadsnakes/ppa'
+       update_cache: yes
+  
+  ## Instalando python 3.9
+  - name: Active software-properties-common
+    apt:
+      name: ['python3.9','python3-pip']
+
+  ## Configurando python3.9 default
+  - name: Set python 3.9 as default
+    alternatives:
+      name: python
+      link: /usr/bin/python
+      path: /usr/bin/python3.9
